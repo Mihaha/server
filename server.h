@@ -12,29 +12,29 @@
 #include <QByteArray>
 #include <QFile>
 #include <QString>
+#include <QList>
+#include <QSignalMapper>
 
-class server: public QTcpServer
+class Server: public QObject
 {
 	Q_OBJECT
 public:
-	server();
-	~server();
-    QByteArray json(int freq, double temp);
-	QTimer* timer;
-	QTcpSocket* socket;
-	QByteArray Data;
+	Server();
+	~Server();
 	QByteArray Data2;
 	QJsonDocument doc;
-	void sendFreqTemp();
-	bool socOpen();
 
 public slots:
 	void startServer();
-	void incomingConnection(qintptr socketDescriptor);
-	void sockReady();
+	//void incomingConnection(qintptr socketDescriptor);
+	void newConnect();
+	void sockReady(int n);
 	void sockDisk();
+private:
+	QTcpSocket* socket;
+	QTcpServer* tcpServer;
+	QList<QTcpSocket*> *list;
+	QSignalMapper* mapper;
 };
-
-
 
 #endif

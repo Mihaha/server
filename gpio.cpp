@@ -1,7 +1,7 @@
 #include "gpio.h"
 #include <QDebug>
 #include <QCoreApplication>
-void gpio::createGPIO(int n)
+void Gpio::createGPIO(int n)
 {
     QString gpio_file, gpio_num;
     QFile exportFile;
@@ -12,10 +12,14 @@ void gpio::createGPIO(int n)
     exportFile.open(QIODevice::WriteOnly);
     ba = gpio_num.toLatin1();
     exportFile.write(ba); 
-    exportFile.close();
+    if(exportFile.isOpen())
+        exportFile.close();
 }
 
-void gpio::changeDirection(QString n, QString mode)
+void Gpio::getCreateGPIO(int n)
+{createGPIO(n);}
+
+void Gpio::changeDirection(QString n, QString mode)
 {
     QString direction_file = "/sys/class/gpio/gpio"+n+"/direction";
     QFile exportFile;
@@ -24,10 +28,14 @@ void gpio::changeDirection(QString n, QString mode)
     exportFile.open(QIODevice::WriteOnly);
     ba = mode.toLatin1();
     exportFile.write(ba); 
-    exportFile.close();
+    if(exportFile.isOpen())
+        exportFile.close();
 }
 
-void gpio::changeValue(QString n, QString mode)
+void Gpio::getChangeDirection(QString n, QString mode)
+{changeDirection(n, mode);}
+
+void Gpio::changeValue(QString n, QString mode)
 {
     QString value_file = "/sys/class/gpio/gpio"+n+"/value";
     QFile exportFile;
@@ -36,10 +44,14 @@ void gpio::changeValue(QString n, QString mode)
     exportFile.open(QIODevice::WriteOnly);
     ba = mode.toLatin1();
     exportFile.write(ba); 
-    exportFile.close();
+    if(exportFile.isOpen())
+        exportFile.close();
 }
 
-void gpio::changeActiveLow(QString n, QString mode)
+void Gpio::getChangeValue(QString n, QString mode)
+{changeValue(n,mode);}
+
+void Gpio::changeActiveLow(QString n, QString mode)
 {
     QString activeLow_file = "/sys/class/gpio/gpio"+n+"/active_low";
     QFile exportFile;
@@ -48,10 +60,14 @@ void gpio::changeActiveLow(QString n, QString mode)
     exportFile.open(QIODevice::WriteOnly);
     ba = mode.toLatin1();
     exportFile.write(ba); 
-    exportFile.close();
+    if(exportFile.isOpen())
+        exportFile.close();
 }
 
-void gpio::delGPIO(int n)
+void Gpio::getChangeActiveLow(QString n, QString mode)
+{changeActiveLow(n, mode);}
+
+void Gpio::delGPIO(int n)
 {
     QString gpio_file, gpio_num;
     QFile exportFile;
@@ -62,10 +78,14 @@ void gpio::delGPIO(int n)
     exportFile.open(QIODevice::WriteOnly);
     ba = gpio_num.toLatin1();
     exportFile.write(ba); 
-    exportFile.close();
+    if(exportFile.isOpen())
+        exportFile.close();
 }
 
-QString gpio::allCreate()
+void Gpio::getDelGPIO(int n)
+{delGPIO(n);}
+
+QString Gpio::allCreate()
 {   QString jsonArr;
     for (int i = 0; i<288; i++)
     {
@@ -78,12 +98,17 @@ QString gpio::allCreate()
         {
             jsonArr += QString::number(i)+",";
         }
-        file.close();
+        if(file.isOpen())
+            file.close();
     }
     allDel();
     return jsonArr;
 }
-void gpio::allDel()
+
+QString Gpio::getAllCreate()
+{return allCreate();}
+
+void Gpio::allDel()
 {
     for (int i=0; i<288; i++)
     {
@@ -96,13 +121,17 @@ void gpio::allDel()
         {
             qDebug() << "GPIO" << QString::number(i) << " not deleted";
         }
-        file1.close();
+        if(file1.isOpen())
+            file1.close();
     }
 }
 
-QJsonObject gpio::GPIOModeChek(QString n)
+void Gpio::getAllDel()
+{allDel();}
+
+QJsonObject Gpio::GPIOModeChek(QString n)
 {
-    //проверка на наличие доступного гпио
+    
     QString filename="/sys/class/gpio/gpio"+n+"/value";
     QFile file;
     QJsonObject chek;
@@ -117,19 +146,22 @@ QJsonObject gpio::GPIOModeChek(QString n)
         QString value, activeLow, direction;
         QTextStream in(&file);
         value = in.readLine();
-        file.close();
+        if(file.isOpen())
+            file.close();
         filename="/sys/class/gpio/gpio"+n+"/direction";
         file.setFileName(filename);
         file.open(QIODevice::ReadOnly);
         QTextStream in1(&file);
         direction = in1.readLine();
-        file.close();
+        if(file.isOpen())
+            file.close();
         filename="/sys/class/gpio/gpio"+n+"/active_low";
         file.setFileName(filename);
         file.open(QIODevice::ReadOnly);
         QTextStream in2(&file);
         activeLow = in2.readLine();
-        file.close();
+        if(file.isOpen())
+            file.close();
         chek.insert("chekMode","GPIO");
         chek.insert("value", value);
         chek.insert("direction", direction);
@@ -137,3 +169,6 @@ QJsonObject gpio::GPIOModeChek(QString n)
     }
     return chek;
 }
+
+QJsonObject Gpio::getGPIOModeChek(QString n)
+{return GPIOModeChek(n);}

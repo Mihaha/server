@@ -12,13 +12,9 @@ GCC_OUTPUT = $$system(gcc --version)
 message("$$GCC_OUTPUT")
 
 SOURCES += \
-        main.cpp 
-
-SOURCES += \
-        gpio.cpp 
-
-SOURCES += \
-        server.cpp 
+        main.cpp \
+        gpio.cpp \
+        server.cpp \
 
 SOURCES += \
         readData.cpp 
@@ -32,10 +28,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #	main.h 
 
 HEADERS += \
-	gpio.h 
-
-HEADERS += \
-	server.h 
-
-HEADERS += \
-	readData.h 
+	gpio.h \
+	server.h \
+	readData.h \

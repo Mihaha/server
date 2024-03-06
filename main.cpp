@@ -8,7 +8,7 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    server serv;
+    Server serv;
     serv.startServer();
     //while (serv.socOpen()==false){}
     //if(serv.socOpen()==true)

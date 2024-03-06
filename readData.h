@@ -13,14 +13,15 @@
     #include <QJsonParseError>
 
 
-    class readData : public QObject
+    class ReadData : public QObject
     {
         Q_OBJECT
     public:
+        int getReadFreq();
+        double getReadTemp();
+    private:
         int readFreq();
         double readTemp();
-        QByteArray json(int freq, double temp);
-        QByteArray Data;
     };
 
     #endif
