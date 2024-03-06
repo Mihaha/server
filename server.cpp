@@ -7,12 +7,8 @@ Server::~Server(){}
 
 void Server::startServer()
 {
-	tcpServer = new QTcpServer;
 	list = new QList<QTcpSocket*>;
-	mapper = new QSignalMapper(this);
-	connect(tcpServer, SIGNAL(newConnection()), this, SLOT(newConnect()));
-    connect(mapper, SIGNAL(mapped(int)), this, SLOT(sockReady(int)));
-	if (tcpServer->listen(QHostAddress::Any,5555))
+	if (this->listen(QHostAddress::Any,5555))
 	{
 		qDebug() << "listening";
 	}
@@ -20,15 +16,38 @@ void Server::startServer()
 	{
 		qDebug()<<"not listening";
 	}
+	mapper = new QSignalMapper(this);
+	mapper2 = new QSignalMapper(this);
+	connect(mapper, SIGNAL(mapped(int)), this, SLOT(sockReady(int)));
+	connect(mapper2, SIGNAL(mapped(int)), this, SLOT(sockDisc(int)));
 }
-
+void Server::incomingConnection(qintptr socketDescriptor)
+{
+	list->append(new QTcpSocket(this));
+	list->last()->setSocketDescriptor(socketDescriptor);
+	//connect(list->last(),SIGNAL(readyRead()),this,SLOT(sockReady(n)));
+	//connect(list->last(),SIGNAL(disconnected()),this,SLOT(sockDisc(n)));
+	mapper->setMapping(list->last(),list->length()-1);
+	mapper2->setMapping(list->last(),list->length()-1);
+	connect(list->last(),SIGNAL(readyRead()),mapper,SLOT(map()));
+	connect(list->last(),SIGNAL(disconnected()),mapper2,SLOT(map()));
+	qDebug() << socketDescriptor << "client connected";
+	
+}
+/*
 void Server::newConnect()
 {
 	list->append(tcpServer->nextPendingConnection());
 	mapper->setMapping(list->last(),list->length()-1);
 	connect(list->last(),SIGNAL(readyRead()),mapper,SLOT(map()));
+	connect(list->last(),SIGNAL(dissconnected()),tcpServer,SLOT(sockDisk()));
 }
-
+*/
+void Server::sockDisc(int n)
+{
+	list->at(n)->deleteLater();
+	qDebug()<<"disconnected";
+}
 
 void Server::sockReady(int n)
 {
@@ -88,9 +107,3 @@ void Server::sockReady(int n)
 	}
 }
 
-void Server::sockDisk()
-{
-	qDebug()<<"disconnected";
-	socket->deleteLater();
-
-}

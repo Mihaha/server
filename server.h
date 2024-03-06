@@ -14,8 +14,9 @@
 #include <QString>
 #include <QList>
 #include <QSignalMapper>
+#include <QObject>
 
-class Server: public QObject
+class Server: public QTcpServer
 {
 	Q_OBJECT
 public:
@@ -26,15 +27,17 @@ public:
 
 public slots:
 	void startServer();
-	//void incomingConnection(qintptr socketDescriptor);
-	void newConnect();
+	void incomingConnection(qintptr socketDescriptor);
+	//void newConnect();
 	void sockReady(int n);
-	void sockDisk();
+	void sockDisc(int n);
+	//void sockDisconnect(int n);
+
 private:
 	QTcpSocket* socket;
-	QTcpServer* tcpServer;
 	QList<QTcpSocket*> *list;
 	QSignalMapper* mapper;
+	QSignalMapper* mapper2;
 };
 
 #endif
